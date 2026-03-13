@@ -4,3 +4,8 @@ torchaudio
 transformers
 accelerate
 sentencepiece
+sentence-transformers
+faiss-cpu
+pypdf
+flask
+bitsandbytes

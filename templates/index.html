@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP RAG Study Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>AP RAG Study Bot</h1>
+                <p>Local Mistral Chat</p>
+            </div>
+
+            <div class="status-card">
+                <div class="status-dot"></div>
+                <div>
+                    <h2>Status</h2>
+                    <p>Connected to local LLM</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h2>Current Mode</h2>
+                <p>Base LLM chat only</p>
+                <p>RAG retrieval will be added next.</p>
+            </div>
+        </aside>
+
+        <main class="chat-panel">
+            <div class="chat-header">
+                <h2>Chat</h2>
+                <p>Ask an anatomy and physiology question.</p>
+            </div>
+
+            <div id="chat-box" class="chat-box">
+                <div class="message bot">
+                    <div class="bubble">
+                        Hi. I am your local A&amp;P study bot. Ask me a question to test the model.
+                    </div>
+                </div>
+            </div>
+
+            <form id="chat-form" class="chat-input-area">
+                <textarea
+                    id="message-input"
+                    placeholder="Type your question here..."
+                    rows="1"
+                    required
+                ></textarea>
+                <button type="submit" id="send-button">Send</button>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById("chat-form");
+        const messageInput = document.getElementById("message-input");
+        const chatBox = document.getElementById("chat-box");
+        const sendButton = document.getElementById("send-button");
+
+        function addMessage(text, sender) {
+            const messageWrapper = document.createElement("div");
+            messageWrapper.classList.add("message", sender);
+
+            const bubble = document.createElement("div");
+            bubble.classList.add("bubble");
+            bubble.textContent = text;
+
+            messageWrapper.appendChild(bubble);
+            chatBox.appendChild(messageWrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        chatForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, "user");
+            messageInput.value = "";
+            sendButton.disabled = true;
+            sendButton.textContent = "Thinking...";
+
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                addMessage(data.reply, "bot");
+            } catch (error) {
+                addMessage("Something went wrong while contacting the model.", "bot");
+            } finally {
+                sendButton.disabled = false;
+                sendButton.textContent = "Send";
+            }
+        });
+
+        messageInput.addEventListener("input", function () {
+            this.style.height = "auto";
+            this.style.height = this.scrollHeight + "px";
+        });
+    </script>
+</body>
+</html>

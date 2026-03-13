@@ -61,19 +61,46 @@ pip install -r requirements.txt
 
 ---
 
-## Running the Model Test
+## Running the Project
 
-To verify the LLM is working locally:
+### Option 1: Terminal Model Test
 
-python test_llm.py
+To verify the LLM is working locally without the UI:
 
-On first run, the model weights (~13GB) will download and cache locally.
+python testLLM.py
+
+On first run, the model weights (~14GB) will download and cache locally via Hugging Face.
 
 You should see:
 - CUDA availability confirmation
 - A generated response from the Mistral model
 
+The model is cached outside the repository and will not re-download on future runs.
+
 ---
+
+### Option 2: Launch the Web UI
+
+To start the Flask chat interface:
+
+python app.py
+
+Then open your browser and navigate to:
+
+http://127.0.0.1:5000
+
+You should see the local chat interface connected to the Mistral model.
+
+The model loads once at server startup. After it finishes loading, you can begin asking questions through the UI.
+
+---
+
+## Notes on First Run
+
+- The first model download is approximately 14GB.
+- This download happens only once and is cached locally.
+- A CUDA-enabled GPU is recommended for reasonable performance.
+- The model runs fully locally and does not use any external API.
 
 ## Notes
 
